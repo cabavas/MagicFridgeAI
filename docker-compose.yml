@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: magicfridge
+    environment:
+      MYSQL_DATABASE: magicfridge
+      MYSQL_USER: magicuser
+      MYSQL_PASSWORD: magicpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - magicfridge_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+
+
+  phpmyadmin:
+    image: phpmyadmin:latest  # Usa a imagem oficial do phpMyAdmin
+    container_name: magicfridge_phpmyadmin
+    environment:
+      PMA_HOST: db  # Conecta ao serviço do MySQL (db)
+      PMA_PORT: 3306 # Porta do MySQL
+      PMA_ARBITRARY: 0
+    ports:
+      - "8080:80"  # Expõe a porta 80 do phpMyAdmin para a porta 8080 no host
+    depends_on:
+      - db  # Garante que o MySQL seja iniciado antes do phpMyAdmin
+    networks:
+      - magicfridge_network
+
+volumes:
+  mysql_data:  # Volume para persistir os dados do MySQL
+
+networks:
+  magicfridge_network:  # Rede para conectar os serviços

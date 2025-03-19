@@ -1,8 +1,6 @@
 package tech.vascon.MagicFridgeAI.FoodItem;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +8,7 @@ import java.util.Optional;
 @Service
 public class FoodItemService {
 
-    private FoodItemRepository repository;
+    private final FoodItemRepository repository;
 
     public FoodItemService(FoodItemRepository foodItemRepository) {
         this.repository = foodItemRepository;
@@ -29,8 +27,7 @@ public class FoodItemService {
     }
 
     public FoodItem update(FoodItem foodItem) {
-        if(repository.findById(id).isPresent()) {
-            foodItem.setId(id);
+        if(repository.findById(foodItem.getId()).isPresent()) {
             return repository.save(foodItem);
         }
         return null;

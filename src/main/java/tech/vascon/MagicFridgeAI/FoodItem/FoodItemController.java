@@ -1,7 +1,6 @@
 package tech.vascon.MagicFridgeAI.FoodItem;
 
 
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +11,7 @@ import java.util.Optional;
 @RequestMapping("/food")
 public class FoodItemController {
 
-    private FoodItemService service;
+    private final FoodItemService service;
 
     public FoodItemController(FoodItemService foodItemService) {
         this.service = foodItemService;
@@ -30,20 +29,21 @@ public class FoodItemController {
     }
 
     @GetMapping("/list/{id}")
-    public Optional<FoodItem> update(@PathVariable Long id, @RequestBody FoodItem foodItem) {
+    public Optional<FoodItem> update(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<FoodItem> updateById(@PathVariable Long id, @RequestBody FoodItem foodItem) {
-       return service.findById(id)
-               .map(item -> {
-                   item.setId(item.getId());
-                   FoodItem updated = service.update(item);
-                   return ResponseEntity.ok().body(updated);
-               })
-               .orElse(ResponseEntity.notFound().build());
+        return service.findById(id)
+                .map(existingItem -> {
+                    foodItem.setId(id);
+                    FoodItem updated = service.update(foodItem);
+                    return ResponseEntity.ok().body(updated);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
